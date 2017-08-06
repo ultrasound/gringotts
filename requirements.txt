@@ -1,0 +1,6 @@
+Django==1.11.3
+djangorestframework==3.6.3
+
+
+Pillow
+git+https://git.weboob.org/weboob/stable.git
