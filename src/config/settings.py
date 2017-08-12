@@ -20,12 +20,28 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'r2vgi6jqwy52kkd@@l_3b@zt%)9lgebh%_&66gas#i$n!&pm64'
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    'r2vgi6jqwy52kkd@@l_3b@zt%)9lgebh%_&66gas#i$n!&pm64'
+)
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "") in ["True", "true"]
 
-ALLOWED_HOSTS = ["localhost"]
+DATABASE_USER = os.environ.get('DATABASE_USER', 'postgres')
+DATABASE_NAME = os.environ.get('DATABASE_NAME', 'postgres')
+DATABASE_HOST = os.environ.get('DATABASE_HOST', '')
+DATABASE_PORT = os.environ.get('DATABASE_PORT', '5432')
+DATABASE_PASSWORD = os.environ.get('DATABASE_PASSWORD', '')
+
+SENTRY_PROTOCOL = os.environ.get('SENTRY_PROTOCOL', '')
+SENTRY_USER = os.environ.get('SENTRY_USER', '')
+SENTRY_PASSWORD = os.environ.get('SENTRY_PASSWORD', '')
+SENTRY_URL = os.environ.get('SENTRY_URL', '')
+
+SENTRY_USED = SENTRY_URL != ''
+POSTGRES_USED = DATABASE_HOST != ''
 
 
 # Application definition
@@ -74,12 +90,24 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if POSTGRES_USED:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': DATABASE_NAME,
+            'USER': DATABASE_USER,
+            'PASSWORD': DATABASE_PASSWORD,
+            'HOST': DATABASE_HOST,
+            'PORT': DATABASE_PORT,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # ADD DEBUG OPTIONS
 if DEBUG:
@@ -92,19 +120,22 @@ if DEBUG:
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
-
+pwd_mod = "django.contrib.auth_password_validation"
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': '%s.UserAttributeSimilarityValidator' % pwd_mod,
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': ('%s.UserAttributeSimilarityValid.MinimumLengthValidator' %
+                 pwd_mod),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': ('%s.UserAttributeSimilarityValid.CommonPasswordValidator' %
+                 pwd_mod),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': ('%s.UserAttributeSimilarityValid.NumericPasswordValidator' %
+                 pwd_mod),
     },
 ]
 
@@ -112,7 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-gb'
 
 TIME_ZONE = 'UTC'
 
@@ -129,3 +160,19 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = "/static"
+
+
+# THIRD PARTY CONFIGURATION
+
+# SENTRY CONFIGURATION
+RAVEN_CONFIG = {
+    'dsn': '%s://%s:%s@%s' % (
+        SENTRY_PROTOCOL,
+        SENTRY_USER,
+        SENTRY_PASSWORD,
+        SENTRY_URL
+    ),
+}
+
+if SENTRY_USED:
+    INSTALLED_APPS += ('raven.contrib.django.raven_compat',)

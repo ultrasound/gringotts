@@ -1,12 +1,17 @@
+# BASE FRAMEWORK
 Django==1.11.3
-djangorestframework==3.6.3
 django-debug-toolbar==1.8
-
-
-enum34                          # Add enum support with python2
-
-
 Pillow
+pyscopg2
+
+# PYTHON ENHANCEMENT
+enum34                                          # Add enum support with python2
+
+
+# PROJECT DEPENDENCIES
 git+https://git.weboob.org/weboob/stable.git
 
+
+# PLATFORM DEPENDENCIES
+raven                                           # Sentry integration
 uwsgi==2.0.15
