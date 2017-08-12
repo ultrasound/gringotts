@@ -1,0 +1,22 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>Gringotts</h1>
+
+    <ul>
+      {% for bank in banks %}
+      <li>
+        <h2>{{ bank.name }} </h2>
+        <ul>
+          {% for account in bank.accounts %}
+            <li>
+              {{ account.name }} {{ account.balance }} {{ account.currency }}
+            </li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
