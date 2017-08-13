@@ -1,0 +1,9 @@
+<html>
+  <body>
+    <form method="POST" action="">{# We should let action empty as this template is used for the edit and the bank creation #}
+      {% csrf_token %}
+      {{ form }}
+      <input type="submit" value="Save"/>
+    </form>
+  </body>
+</html>

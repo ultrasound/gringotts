@@ -3,19 +3,28 @@
   </head>
   <body>
     <h1>Gringotts</h1>
-
+    <a href="{% url "bank-create" %}">Create bank</a>
     <ul>
       {% for bank in banks %}
       <li>
-        <h2>{{ bank.name }} </h2>
-        <ul>
+        <h2>{{ bank.name }}
+          <a href="{% url "bank-edit" bank.pk %}">Edit</a>
+          <a href="{% url "bank-delete" bank.pk %}">Delete</a>
+        </h2>
+
+                <ul>
           {% for account in bank.accounts %}
             <li>
               {{ account.name }} {{ account.balance }} {{ account.currency }}
             </li>
+
+          {% empty %}
+            <li>No account retrieved</li>
           {% endfor %}
         </ul>
       </li>
+      {% empty %}
+        <li>No bank configured</li>
       {% endfor %}
     </ul>
   </body>
