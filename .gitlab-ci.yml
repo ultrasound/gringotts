@@ -1,0 +1,54 @@
+image: python:3.5
+
+services:
+  - postgres
+
+variables:
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  CONTAINER_TEST_IMAGE: registry.gitlab.com/juanwolf/gringotts:$CI_BUILD_REF_NAME
+  CONTAINER_RELEASE_IMAGE: registry.gitlab.com/juanwolf/gringotts:latest
+  CONTAINER_TAGGED_IMAGE : registry.gitlab.com/juanwolf/gringotts:$CI_BUILD_TAG
+
+before_script:
+  - export DATABASE_HOST='postgres'
+  - export DATABASE_USER='postgres'
+  - export DATABASE_PASSWORD='postgres'
+
+stages:
+  - test
+  - build
+  - release
+
+Testing:
+  stage: test
+  script:
+    - pip install -r requirements.txt
+    - cd src
+    - pytest --flakes
+  tags:
+    - docker
+
+
+Building image:
+  stage: build
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker build --pull -t $CONTAINER_TEST_IMAGE -f ./docker/Dockerfile .
+    - docker push $CONTAINER_TEST_IMAGE
+  tags:
+    - production
+
+Releasing image:
+  stage: release
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker pull $CONTAINER_TEST_IMAGE
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_TAGGED_IMAGE
+    - docker push $CONTAINER_RELEASE_IMAGE
+  tags:
+    - production
+  only:
+    - tags
