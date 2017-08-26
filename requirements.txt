@@ -3,7 +3,10 @@ Django==1.11.3
 django-debug-toolbar==1.8
 Pillow
 psycopg2==2.7.3
+
+# TESTING
 pytest==3.2.1
+pytest-django==3.1.2
 pytest-flakes==2.0.0
 
 # PYTHON ENHANCEMENT
@@ -12,6 +15,9 @@ enum34                                          # Add enum support with python2
 
 # PROJECT DEPENDENCIES
 git+https://git.weboob.org/weboob/stable.git
+
+# STATIC FILES
+whitenoise==4.0b3
 
 
 # PLATFORM DEPENDENCIES

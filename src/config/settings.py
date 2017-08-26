@@ -43,7 +43,7 @@ SENTRY_URL = os.environ.get('SENTRY_URL', '')
 SENTRY_USED = SENTRY_URL != ''
 POSTGRES_USED = DATABASE_HOST != ''
 
-
+INTERNAL_IPS = os.getenv("INTERNAL_IPS", "127.0.0.1").split()
 # Application definition
 
 INSTALLED_APPS = [
@@ -111,12 +111,10 @@ else:
 
 # ADD DEBUG OPTIONS
 if DEBUG:
-    INSTALLED_APPS = ['debug_toolbar'] + INSTALLED_APPS
-
-    MIDDLEWARE = [
+    INSTALLED_APPS += ['debug_toolbar']
+    MIDDLEWARE += [
         'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ] + MIDDLEWARE
-
+    ]
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
