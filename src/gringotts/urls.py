@@ -11,14 +11,13 @@ urlpatterns = [
         name="bank-create"
     ),
     url(
-        r'^banks/(?P<pk>[0-9]+)/edit$',
-        views.BankCreateView.as_view(),
-        name="bank-edit"
+        r'^banks/(?P<pk>[0-9]+)/update$',
+        views.BankUpdateView.as_view(),
+        name="bank-update"
     ),
     url(
         r'^banks/(?P<pk>[0-9]+)/delete$',
         views.BankDeleteView.as_view(),
         name="bank-delete"
     ),
-
 ]
