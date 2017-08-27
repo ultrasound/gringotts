@@ -26,7 +26,8 @@ Testing:
   script:
     - pip install -r requirements.txt
     - cd src
-    - pytest --flakes
+    - pytest --flake8
+    - pytest --cov=gringotts
   tags:
     - docker
 
